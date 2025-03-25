@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Servidor Node.js</title>
+</head>
+<body style="text-align: center; font-family: Arial, sans-serif;">
+    <h1 style="color: #007bff;">🚀 Servidor Node.js com Express!</h1>
+    <p>Selecione um cliente:</p>
+
+    <select id="customerDropdown">
+        <option value="">Carregando...</option>
+    </select>
+
+    <p id="customerInfo"></p>
+
+    <script>
+        async function fetchCustomers() {
+            try {
+                const response = await fetch('/list');
+                const customers = await response.json();
+                console.log("customers: "+customers);
+                const dropdown = document.getElementById('customerDropdown');
+                dropdown.innerHTML = '<option value="">Selecione um cliente</option>';
+
+                customers.forEach(customer => {
+                    const option = document.createElement('option');
+                    option.value = customer.id;
+                    option.textContent = customer.nome;
+                    dropdown.appendChild(option);
+                });
+
+                dropdown.addEventListener('change', function () {
+                    const selected = customers.find(c => c.id == this.value);
+                    document.getElementById('customerInfo').innerText = selected 
+                        ? `Email: ${selected.email}`
+                        : "";
+                });
+
+            } catch (error) {
+                console.error("Erro ao buscar clientes:", error);
+            }
+        }
+        console.log("r");
+        fetchCustomers();
+    </script>
+</body>
+</html>
