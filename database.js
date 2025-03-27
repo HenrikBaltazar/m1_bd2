@@ -16,7 +16,7 @@ const Store = sequelize.define('Store', {
     address_id: { type: DataTypes.SMALLINT.UNSIGNED, allowNull: false }
 }, { tableName: 'store', timestamps: false });
 
-const Manager = sequelize.define('Manager', {
+const Staff = sequelize.define('Staff', {
     staff_id: { type: DataTypes.TINYINT.UNSIGNED, autoIncrement: true, primaryKey: true },
     address_id: { type: DataTypes.SMALLINT.UNSIGNED, allowNull: false  },
     first_name: { type: DataTypes.STRING, allowNull: false  },
@@ -36,10 +36,10 @@ const Address = sequelize.define('Address', {
     district: { type: DataTypes.STRING }
 }, { tableName: 'address', timestamps: false });
 
-Store.hasOne(Address, { foreignKey: 'address_id' });
-Store.hasOne(Manager, { foreignKey: 'manager_staff_id' });
+Store.belongsTo(Address, { foreignKey: 'address_id' });
+Staff.belongsTo(Store, { foreignKey: 'store_id' });
 
-Manager.hasOne(Store, { foreignKey: 'store_id' });
-Manager.hasOne(Address, { foreignKey: 'address_id' });
+Staff.hasOne(Store, { foreignKey: 'store_id' });
+Staff.hasOne(Address, { foreignKey: 'address_id' });
 
-module.exports = { sequelize, Store, Manager, Address };
+module.exports = { sequelize, Store, Staff, Address };

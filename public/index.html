@@ -4,46 +4,115 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Servidor Node.js</title>
+    <style>
+        body {
+            text-align: center;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        select {
+            padding: 5px;
+            font-size: 16px;
+        }
+
+        .info-container {
+            margin-top: 10px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .staff-info, .store-info, .address-info {
+            margin-top: 10px;
+            font-size: 18px;
+        }
+    </style>
 </head>
-<body style="text-align: center; font-family: Arial, sans-serif;">
+<body>
     <h1 style="color: #007bff;">🚀 Servidor Node.js com Express!</h1>
-    <p>Selecione um cliente:</p>
 
-    <select id="customerDropdown">
-        <option value="">Carregando...</option>
-    </select>
+    <div class="container">
+        <label for="staffDropdown">Funcionário:</label>
+        <select id="staffDropdown">
+            <option value="">Carregando...</option>
+        </select>
 
-    <p id="customerInfo"></p>
+        <!-- Dados do Funcionário -->
+        <div class="staff-info">
+            <p><strong>Nome:</strong> <span id="staffName">-</span></p>
+            <p><strong>Email:</strong> <span id="staffEmail">-</span></p>
+            <p><strong>Endereço do Funcionário:</strong> <span id="staffAddress">-</span></p>
+        </div>
+
+        <!-- Dados da Loja -->
+        <div class="store-info">
+            <p>📌 <strong>Store ID:</strong> <span id="storeInfo">-</span></p>
+        </div>
+
+        <!-- Dados do Endereço da Loja -->
+        <div class="address-info">
+            <p>🏠 <strong>Endereço da Loja:</strong> <span id="addressInfo">-</span></p>
+        </div>
+    </div>
 
     <script>
-        async function fetchCustomers() {
+        async function fetchData(endpoint) {
+            const url = `${window.location.origin}${endpoint}`;
             try {
-                const response = await fetch('/list');
-                const customers = await response.json();
-                console.log("customers: "+customers);
-                const dropdown = document.getElementById('customerDropdown');
-                dropdown.innerHTML = '<option value="">Selecione um cliente</option>';
-
-                customers.forEach(customer => {
-                    const option = document.createElement('option');
-                    option.value = customer.id;
-                    option.textContent = customer.nome;
-                    dropdown.appendChild(option);
-                });
-
-                dropdown.addEventListener('change', function () {
-                    const selected = customers.find(c => c.id == this.value);
-                    document.getElementById('customerInfo').innerText = selected 
-                        ? `Email: ${selected.email}`
-                        : "";
-                });
-
+                const response = await fetch(url);
+                return await response.json();
             } catch (error) {
-                console.error("Erro ao buscar clientes:", error);
+                console.error('Erro ao buscar dados:', error);
+                return [];
             }
         }
-        console.log("r");
-        fetchCustomers();
+
+        async function populateStaffDropdown() {
+            const staffData = await fetchData('/staff');
+            const staffDropdown = document.getElementById('staffDropdown');
+            staffDropdown.innerHTML = '<option value="">Selecione</option>';
+
+            staffData.forEach(staff => {
+                const option = document.createElement('option');
+                option.value = staff.store_id;
+                option.textContent = staff.nome;
+                option.dataset.staffId = staff.id;
+                staffDropdown.appendChild(option);
+            });
+
+            staffDropdown.addEventListener('change', async function () {
+                const selectedStaff = this.options[this.selectedIndex];
+                if (selectedStaff.value) {
+                    // Mostrar dados do Staff
+                    const selectedStaffId = selectedStaff.dataset.staffId;
+                    const staffInfo = staffData.find(staff => staff.id == selectedStaffId);
+                    document.getElementById('staffName').textContent = `${staffInfo.nome}`;
+                    document.getElementById('staffEmail').textContent = staffInfo.email;
+                    document.getElementById('staffAddress').textContent = staffInfo.endereco; // Endereço completo
+
+                    // Mostrar Store ID
+                    document.getElementById('storeInfo').textContent = selectedStaff.value;
+
+                    // Exibir endereço da loja (ainda mantendo a funcionalidade da loja e endereço)
+                    document.getElementById('addressInfo').textContent = 'Endereço da loja não implementado aqui.';
+                } else {
+                    // Resetar dados se não houver seleção
+                    document.getElementById('staffName').textContent = '-';
+                    document.getElementById('staffEmail').textContent = '-';
+                    document.getElementById('staffAddress').textContent = '-';
+                    document.getElementById('storeInfo').textContent = '-';
+                    document.getElementById('addressInfo').textContent = '-';
+                }
+            });
+        }
+
+        populateStaffDropdown();
     </script>
 </body>
 </html>
