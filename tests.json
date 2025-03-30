@@ -1,0 +1,70 @@
+localhost:3000/staff
+{
+    "id": 1
+}
+{
+    "address": "Rua das Palmeiras, 789",
+    "district": "Jardim América",
+    "city_id": 3,
+    "phone": "+55 31 91234-5678",
+    "location": {
+        "type": "Point",
+        "coordinates": [-19.9233, -43.9389]
+    },
+    "postal_code": "30140-120",
+    "first_name": "Mariana",
+    "last_name": "Ferreira",
+    "address_store": "Rua dos Comerciantes, 321",
+    "district_store": "Centro Comercial",
+    "city_id_store": 5,
+    "phone_store": "+55 41 99876-5432",
+    "location_store": {
+        "type": "Point",
+        "coordinates": [-25.4284, -49.2733]
+    },
+    "postal_code_store": "80010-000"
+}
+
+
+localhost:3000/address
+{
+    "id": 1
+}
+{
+    "address": "Rua Exemplo, 123",
+    "district": "Centro",
+    "city_id": 1,
+    "postal_code": "12345-678",
+    "phone": "+55 11 98765-4321",
+    "location": {
+            "type": "Point",
+            "coordinates": [-23.55052, -46.633308]
+        }
+}
+
+localhost:3000/store
+{
+    "id":1
+}
+{
+    "address": "Rua Exemplo, 123",
+    "district": "Centro",
+    "city_id": 1,
+    "phone": "+55 11 98765-4321",
+    "location": {
+        "type": "Point",
+        "coordinates": [-23.55052, -46.633308]
+    },
+    "postal_code": "12345-678",
+    "first_name": "Carlos",
+    "last_name": "Silva",
+    "address_manager": "Avenida Principal, 456",
+    "district_manager": "Bela Vista",
+    "city_id_manager": 2,
+    "phone_manager": "+55 21 99999-0000",
+    "location_manager": {
+        "type": "Point",
+        "coordinates": [-22.9068, -43.1729]
+    },
+    "postal_code_manager": "20000-000"
+}

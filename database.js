@@ -31,15 +31,16 @@ const Staff = sequelize.define('Staff', {
 
 const Address = sequelize.define('Address', {
     address_id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
-    address: { type: DataTypes.STRING },
+    address: { type: DataTypes.STRING, allowNull: false },
     postal_code: { type: DataTypes.STRING, allowNull: false },
-    district: { type: DataTypes.STRING }
+    district: { type: DataTypes.STRING, allowNull: false },
+    city_id: { type: DataTypes.SMALLINT.UNSIGNED, allowNull: false },
+    phone: { type: DataTypes.INTEGER, allowNull: false },
+    location: { type: DataTypes.GEOMETRY("POINT"), allowNull: false }
 }, { tableName: 'address', timestamps: false });
 
 Store.belongsTo(Address, { foreignKey: 'address_id' });
 Staff.belongsTo(Store, { foreignKey: 'store_id' });
-
-Staff.hasOne(Store, { foreignKey: 'store_id' });
-Staff.hasOne(Address, { foreignKey: 'address_id' });
+Staff.belongsTo(Address, { foreignKey: 'address_id' });
 
 module.exports = { sequelize, Store, Staff, Address };

@@ -1,177 +1,129 @@
 <!DOCTYPE html>
-<html lang="pt">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Servidor Node.js</title>
+    <title>API Tester</title>
     <style>
         body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background: linear-gradient(45deg, #ff6ec7, #ff9a8b, #fad0c4, #ffd1ff);
+            background-size: 400% 400%;
+            animation: gradientAnimation 10s ease infinite;
+            color: white;
             text-align: center;
-            font-family: Arial, sans-serif;
+            padding: 50px;
         }
 
-        .container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-top: 20px;
-        }
-
-        select {
-            padding: 5px;
-            font-size: 16px;
-        }
-
-        .info-container {
-            margin-top: 10px;
-            font-size: 18px;
-            font-weight: bold;
-        }
-
-        /* Modal styles */
-        /* O modal - está inicialmente oculto */
-        #staffModal {
-            display: none; 
-            position: fixed; 
-            z-index: 1; 
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto; 
-            background-color: rgba(0, 0, 0, 0.4); 
-        }
-
-        /* Modal Content */
-        .modal-content {
-            background-color: #fefefe;
-            margin: 15% auto;
+        h1 {
+            font-size: 3em;
+            background-color: #FF00FF;
             padding: 20px;
-            border: 1px solid #888;
-            width: 80%; /* Pode ajustar conforme necessário */
-            max-width: 500px;
+            border-radius: 10px;
+            animation: bounce 1s infinite;
         }
 
-        /* O botão de fechar */
-        .close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-        }
-
-        .close:hover,
-        .close:focus {
-            color: black;
-            text-decoration: none;
+        button {
+            background-color: #00FF00;
+            color: #000;
+            font-size: 1.2em;
+            margin: 20px;
+            padding: 15px 30px;
+            border: 2px solid #000;
+            border-radius: 50px;
             cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0, 255, 0, 0.5);
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #FFFF00;
+            color: #000;
+            transform: scale(1.1);
+            box-shadow: 0 10px 30px rgba(255, 255, 0, 0.7);
+        }
+
+        pre {
+            background-color: #111;
+            padding: 20px;
+            border-radius: 10px;
+            overflow-x: auto;
+            font-size: 1.1em;
+            max-height: 500px;
+            text-align: left;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+        }
+
+        @keyframes gradientAnimation {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        @keyframes bounce {
+            0% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-20px);
+            }
+            100% {
+                transform: translateY(0);
+            }
         }
     </style>
+    <script>
+        async function sendRequest(endpoint, method) {
+            const data = {
+                address: "Rua Teste, 123",
+                district: "Centro",
+                city_id: 1,
+                phone: "+55 11 98765-4321",
+                location: { type: "Point", coordinates: [-23.55052, -46.633308] },
+                postal_code: "12345-678",
+                first_name: "Carlos",
+                last_name: "Silva",
+                address_store: "Rua Comercial, 456",
+                district_store: "Bairro Novo",
+                city_id_store: 2,
+                phone_store: "+55 21 99999-0000",
+                location_store: { type: "Point", coordinates: [-22.9068, -43.1729] },
+                postal_code_store: "20000-000",
+                address_manager: "Avenida Central, 789",
+                district_manager: "Centro Empresarial",
+                city_id_manager: 3,
+                phone_manager: "+55 31 91234-5678",
+                location_manager: { type: "Point", coordinates: [-19.9233, -43.9389] },
+                postal_code_manager: "30140-120"
+            };
+
+            let options = { method: method };
+            if (method === "POST") {
+                options.headers = { "Content-Type": "application/json" };
+                options.body = JSON.stringify(data);
+            }
+
+            const response = await fetch(endpoint, options);
+            const result = await response.json();
+            document.getElementById("response").textContent = JSON.stringify(result, null, 2);
+        }
+    </script>
 </head>
 <body>
-    <h1 style="color: #007bff;">🚀 Servidor Node.js com Express!</h1>
-
-    <div class="container">
-        <label for="staffDropdown">Funcionário:</label>
-        <select id="staffDropdown">
-            <option value="">Carregando...</option>
-        </select>
-    </div>
-
-    <!-- O Modal -->
-    <div id="staffModal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2>Detalhes do Funcionário</h2>
-
-            <!-- Dados do Funcionário -->
-            <div class="staff-info">
-                <p><strong>Nome:</strong> <span id="staffName">-</span></p>
-                <p><strong>Email:</strong> <span id="staffEmail">-</span></p>
-                <p><strong>Endereço do Funcionário:</strong> <span id="staffAddress">-</span></p>
-            </div>
-
-            <!-- Dados da Loja -->
-            <div class="store-info">
-                <p>📌 <strong>Store ID:</strong> <span id="storeInfo">-</span></p>
-            </div>
-
-            <!-- Dados do Endereço da Loja -->
-            <div class="address-info">
-                <p>🏠 <strong>Endereço da Loja:</strong> <span id="addressInfo">-</span></p>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        async function fetchData(endpoint) {
-            const url = `${window.location.origin}${endpoint}`;
-            try {
-                const response = await fetch(url);
-                return await response.json();
-            } catch (error) {
-                console.error('Erro ao buscar dados:', error);
-                return [];
-            }
-        }
-
-        async function populateStaffDropdown() {
-            const staffData = await fetchData('/staff');
-            const staffDropdown = document.getElementById('staffDropdown');
-            staffDropdown.innerHTML = '<option value="">Selecione</option>';
-
-            staffData.forEach(staff => {
-                const option = document.createElement('option');
-                option.value = staff.store_id;
-                option.textContent = staff.nome;
-                option.dataset.staffId = staff.id;
-                staffDropdown.appendChild(option);
-            });
-
-            staffDropdown.addEventListener('change', async function () {
-                const selectedStaff = this.options[this.selectedIndex];
-                if (selectedStaff.value) {
-                    // Mostrar dados do Staff no Modal
-                    const selectedStaffId = selectedStaff.dataset.staffId;
-                    const staffInfo = staffData.find(staff => staff.id == selectedStaffId);
-                    document.getElementById('staffName').textContent = `${staffInfo.nome}`;
-                    document.getElementById('staffEmail').textContent = staffInfo.email;
-                    document.getElementById('staffAddress').textContent = staffInfo.endereco; // Endereço completo
-
-                    // Mostrar Store ID no Modal
-                    document.getElementById('storeInfo').textContent = selectedStaff.value;
-
-                    // Exibir endereço da loja no Modal
-                    document.getElementById('addressInfo').textContent = 'Endereço da loja não implementado aqui.';
-
-                    // Exibir o Modal
-                    document.getElementById('staffModal').style.display = "block";
-                } else {
-                    // Resetar dados se não houver seleção
-                    document.getElementById('staffName').textContent = '-';
-                    document.getElementById('staffEmail').textContent = '-';
-                    document.getElementById('staffAddress').textContent = '-';
-                    document.getElementById('storeInfo').textContent = '-';
-                    document.getElementById('addressInfo').textContent = '-';
-                }
-            });
-        }
-
-        // Fechar o Modal
-        const modal = document.getElementById("staffModal");
-        const closeBtn = document.getElementsByClassName("close")[0];
-        closeBtn.onclick = function() {
-            modal.style.display = "none";
-        }
-
-        // Fechar o Modal clicando fora dele
-        window.onclick = function(event) {
-            if (event.target == modal) {
-                modal.style.display = "none";
-            }
-        }
-
-        populateStaffDropdown();
-    </script>
+    <h1>Teste da API Psicodélica!</h1>
+    <button onclick="sendRequest('/staff', 'POST')">Criar Staff</button>
+    <button onclick="sendRequest('/staff', 'GET')">Listar Staff</button>
+    <button onclick="sendRequest('/store', 'POST')">Criar Store</button>
+    <button onclick="sendRequest('/store', 'GET')">Listar Stores</button>
+    <button onclick="sendRequest('/address', 'POST')">Criar Address</button>
+    <button onclick="sendRequest('/address', 'GET')">Listar Addresses</button>
+    <h2>Resposta:</h2>
+    <pre id="response"></pre>
 </body>
 </html>
